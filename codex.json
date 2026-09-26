@@ -1,10 +1,10 @@
 {
   "manifestVersion": 1,
-  "id": "task-observer-fork",
-  "name": "Task Observer (Mon Fork)",
+  "id": "task-observer-visible",
+  "name": "Task Observer (Visible)",
   "version": "1.0.0",
-  "description": "Alignement du style de l'I.A. sur l'utilisateur.",
+  "description": "Analyse du style de travail de l'utilisateur.",
   "icon": "👁️",
-  "entrypoint": "index.js",
-  "capabilities": ["prompt-injection"]
+  "capabilities": ["mcp-proxy"],
+  "entrypoint": "scripts/validate.py"
 }
