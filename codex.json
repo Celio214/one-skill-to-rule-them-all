@@ -1,0 +1,10 @@
+{
+  "manifestVersion": 1,
+  "id": "task-observer-fork",
+  "name": "Task Observer (Mon Fork)",
+  "version": "1.0.0",
+  "description": "Analyse de style de code synchronisée depuis mon fork.",
+  "icon": "👁️",
+  "entrypoint": "skills/observer.md",
+  "capabilities": ["prompt-injection"]
+}
