@@ -1,0 +1,10 @@
+{
+  "manifestVersion": 1,
+  "id": "task-observer-local",
+  "name": "Task Observer (Visible)",
+  "version": "1.0.0",
+  "description": "Analyse du style de travail de l'utilisateur.",
+  "icon": "👁️",
+  "capabilities": ["prompt-injection"],
+  "entrypoint": "activated.js"
+}
