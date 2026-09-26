@@ -3,8 +3,8 @@
   "id": "task-observer-fork",
   "name": "Task Observer (Mon Fork)",
   "version": "1.0.0",
-  "description": "Analyse de style de code synchronisée depuis mon fork.",
+  "description": "Alignement du style de l'I.A. sur l'utilisateur.",
   "icon": "👁️",
-  "entrypoint": "skills/observer.md",
+  "entrypoint": "index.js",
   "capabilities": ["prompt-injection"]
 }
