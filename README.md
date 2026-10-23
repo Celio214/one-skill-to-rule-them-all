@@ -112,7 +112,7 @@ The skill is a small bundle: `SKILL.md`, the files in `references/` that are loa
 
 **Versions for other environments created by users:**
 - Codex version by AllstarGER: [https://github.com/AllstarGER/one-skill-to-rule-them-all](https://github.com/AllstarGER/one-skill-to-rule-them-all) (based on an older version of task-observer)
-- OpenCode version by tmogeid: [https://github.com/tmogeid/skill-prompt-evolution](https://github.com/tmogeid/skill-prompt-evolution) (based on an older version of task-observer, combined with hqhq1025's Skill Optimizer, with Spanish-first pattern detection)
+- OpenCode version by tmogeid: [https://github.com/tmogeid/skill-prompt-evolution](https://github.com/tmogeid/skill-prompt-evolution) (based on an older version of task-observer, combined with [hqhq1025's Skill Optimizer](https://github.com/hqhq1025/skill-optimizer), with Spanish-first pattern detection)
 - Please get in touch if you've open-sourced an adaptation of the meta-skill for another system or environment. I'm happy to include it here.
 
 **Potentially compatible with caveats:**
