@@ -50,13 +50,15 @@ Some observations reveal patterns that aren't specific to one skill. These get c
 
 The observer doesn't modify your installed skills. In an interactive review you approve each change; a scheduled review applies the observations that need no decision from you to staged copies only. Nothing goes live until you install the updated bundle, so you stay in control of what changes and when.
 
-## How this differs from project memory
+## How this differs from Claude's built-in features
 
 Claude Code Projects can write project memory on its own: when you correct a thread and tell Claude to remember the correction, it goes into that project's memory and later threads start with it. Those entries are notes the agent keeps to, scoped to one project, and they are deleted with the project.
 
 Task Observer does a different job, and the two work best together. **Scope:** project memory records a fact or a pitfall for *this* project; Task Observer turns recurring friction into a change to a reusable skill, which then carries into every project that loads that skill. **Control:** project memory is written automatically and applied as an instruction; a Task Observer observation is a proposal, and a human review sits between the observation and the rule it becomes. Nothing changes a skill until you install the staged update.
 
 The practical link: a pitfall you find yourself storing in project memory more than once, or in more than one project, is a Task Observer signal — it has stopped being about the project and started being about the skill.
+
+Claude Code's built-in `/insights` command is the other close neighbour. It generates a snapshot report on your recent sessions and suggests CLAUDE.md rules for instructions you keep repeating. That is a useful snapshot, but it keeps no running log of observations, does not maintain your existing skills, and leaves applying its suggestions to you. Task Observer works continuously, ties each observation to the skill it concerns and turns it into a reviewed update. The two combine well: a rule `/insights` suggests that belongs to a skill rather than a project is a good candidate for an observation.
 
 ## Who it's for
 
@@ -110,6 +112,7 @@ The skill is a small bundle: `SKILL.md`, the files in `references/` that are loa
 
 **Versions for other environments created by users:**
 - Codex version by AllstarGER: [https://github.com/AllstarGER/one-skill-to-rule-them-all](https://github.com/AllstarGER/one-skill-to-rule-them-all) (based on an older version of task-observer)
+- OpenCode version by tmogeid: [https://github.com/tmogeid/skill-prompt-evolution](https://github.com/tmogeid/skill-prompt-evolution) (based on an older version of task-observer, combined with hqhq1025's Skill Optimizer, with Spanish-first pattern detection)
 - Please get in touch if you've open-sourced an adaptation of the meta-skill for another system or environment. I'm happy to include it here.
 
 **Potentially compatible with caveats:**
@@ -207,13 +210,14 @@ I would like to thank the following creators, platforms, publications, companies
 - Skillselion: [https://skillselion.com/guides/task-observer-skill-claude-code-guide](https://skillselion.com/guides/task-observer-skill-claude-code-guide)
 - Adele Newenham: [https://www.aiwithadele.com/guides/claude-code-plugins](https://www.aiwithadele.com/guides/claude-code-plugins)
 - Hysen Labs: [https://hysenlabs.com/en/projects/rebelytics-one-skill-to-rule-them-all](https://hysenlabs.com/en/projects/rebelytics-one-skill-to-rule-them-all)
-- Uday Sharma: [https://medium.com/@neuraldev/5-claude-code-plugins-that-take-your-setup-to-the-next-level-d5d61c2c5828](https://medium.com/@neuraldev/5-claude-code-plugins-that-take-your-setup-to-the-next-level-d5d61c2c5828)
+- Uday Sharma: [https://medium.com/@neuraldev/1-800-observations-81-skills-how-one-meta-skill-keeps-claude-getting-better-1da47180f894](https://medium.com/@neuraldev/1-800-observations-81-skills-how-one-meta-skill-keeps-claude-getting-better-1da47180f894)
 - SnowTiger: [https://www.toutiao.com/article/7687548501114225192/](https://www.toutiao.com/article/7687548501114225192/)
 - Divad: [https://divadsanders.medium.com/i-fixed-everything-wrong-with-claude-code-5-best-claude-plugins-c1af8d813ee1](https://divadsanders.medium.com/i-fixed-everything-wrong-with-claude-code-5-best-claude-plugins-c1af8d813ee1)
 - Abhijay Arora Vuyyuru (AI Action Letter): [https://abhijayvuyyuru.substack.com/p/dont-use-claude-code-without-these](https://abhijayvuyyuru.substack.com/p/dont-use-claude-code-without-these)
 - The Ai Impact: [https://www.theaiimpact.co/guides/claude-code-add-ons](https://www.theaiimpact.co/guides/claude-code-add-ons)
 - Bill Prin: [https://x.com/Bill_Prin/status/2103189962640552198](https://x.com/Bill_Prin/status/2103189962640552198)
 - Jake Austin: [https://www.snapchat.com/@itsjakeaustin3/spotlight/W7_EDlXWTBiXAEEniNoMPwAAYaGlrcndlbmJsAaDY8w3vAaDY8nNPAAAAAw](https://www.snapchat.com/@itsjakeaustin3/spotlight/W7_EDlXWTBiXAEEniNoMPwAAYaGlrcndlbmJsAaDY8w3vAaDY8nNPAAAAAw)
+- とも (tomo_ai_tech): [https://note.com/tomo_ai_tech/n/n0d5a87ebb8c0](https://note.com/tomo_ai_tech/n/n0d5a87ebb8c0)
 
 If I forgot to list your recommendation here, please let me know or submit it via a PR in the same format as the others.
 
