@@ -1500,11 +1500,14 @@ common way a staged skill's frontmatter stops parsing — see
 that no Python check leaves bytecode in the staged tree (a `__pycache__/`
 there is one the pre-delivery gate rejects, on a mount that cannot unlink it
 without the delete grant): a compile check runs as
-`PYTHONPYCACHEPREFIX=<scratch dir outside the staged tree> python3 -m py_compile <file>`
+`python3 -I -X pycache_prefix=<scratch dir outside the staged tree> -m py_compile <file>`
 (or `compile()` via `python3 -c`), because `py_compile` writes its `.pyc`
 whatever `PYTHONDONTWRITEBYTECODE` says — that variable governs only the
 import machinery — so `PYTHONDONTWRITEBYTECODE=1` is for scripts that are
-executed, and the Delivery sweep stays the backstop; an explicit delete
+executed; and under `-I`, settings go as `-X` options, not environment
+variables: `-I` implies `-E`, which drops every `PYTHON*` variable, so a
+prefix set in the environment is ignored and the bytecode lands beside
+the file. The Delivery sweep stays the backstop; an explicit delete
 scope — the subagent may remove only files it created, by path, under its
 own directories, and never runs a recursive delete on a directory it did
 not create; whether the pass is a content pass or a reformat —
@@ -1944,7 +1947,11 @@ summary lists each such file with its diff. A staged copy or patch of
 one of them left by an earlier round is applied the same way by the next
 review, not carried forward as an install instruction. A file another
 process owns and reads at run time stays staged, as the next paragraph
-says. The failure shape: staging a file that has no install step turns
+says — and once the user is present after a scheduled run, the follow-up
+applies every staged patch whose live hash still matches its manifest
+entry, as the review's own act, instead of listing it as an install step;
+only a patch whose live file has moved stays with the user. The failure
+shape: staging a file that has no install step turns
 the review's own write into a manual copy nobody makes.
 
 **State files are staged as a patch, never as a snapshot.** A state file
@@ -1961,7 +1968,12 @@ instruction (Step 1, "A staged state file is reconciled by its recorded
 hash"). The failure shape: every run writes a state file, so a snapshot
 goes stale with the next run, and its "copy it over" instruction becomes
 an overwrite that deletes everything written since staging; a stale
-patch degrades into a conflict someone has to resolve instead.
+patch degrades into a conflict someone has to resolve instead. **A state
+file the review CREATES is written directly to its workspace path** — no
+live file means no other writer to collide with, so the patch rule has
+nothing to protect — and its manifest entry records the creation;
+`_target-files/` holds patches only. Staging a new file there turns the
+review's own write into a copy the user is asked to make.
 
 **The dated staging folder is multi-writer.** `skill-updates/<date>/` is
 a namespace keyed only by date, so a manual session and a scheduled run

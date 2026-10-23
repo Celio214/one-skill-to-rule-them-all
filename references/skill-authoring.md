@@ -35,8 +35,9 @@ Recognise one: the methodology works across clients and contexts; no
 proprietary information is needed; other practitioners would find it
 valuable; it captures a process, not personal preferences. Required
 elements: author and licence in the frontmatter plus a one-line footer
-(template below); a feedback offer at the top of the body routing
-methodology feedback to the creator; tool-agnostic language
+(template below); a `## Feedback on this skill` section just before the
+footer routing methodology feedback to the creator — the body opens with
+what the skill does, never with the offer; tool-agnostic language
 (capabilities like "browser access", not product names); built-in
 enforcement (see Pre-Flight Principle). Default to open-source when a skill
 could go either way — strip specifics and generalise.
@@ -180,7 +181,10 @@ point at which retrofitting stops being optional. Concretely:
 - **References stay one level deep.** A reference file points back to
   the core, not onward to another reference — a load that depends on a
   second load is the one that gets skipped — so a rule two episodes need
-  is routed through the core's pointer list, unless no pointer can carry it.
+  is routed through the core's pointer list. Declared exception, not an
+  escape clause: this skill's references cite `weekly-review.md` directly,
+  because the review procedure is the one episode every other reference
+  serves and the core's pointer to it is already mandatory.
 
 Splitting also creates the edit seams a monolith lacks. Retrofitting
 existing large skills is a separate, lower-priority job — the default
@@ -207,20 +211,12 @@ The rule: a reference file serves one episode, or a set of episodes that
 reliably co-occur. Splitting is indicated when the count of distinct load
 triggers into one file grows, whatever its size — each trigger pays for
 every other episode's content — and a long single-episode file is
-correctly shaped and must not be split to satisfy a size rule. One
-measurement of this skill's own bundle (lines / load triggers declared in
-each file's header), copied from the validator's `reference shape` line —
-refresh it from that line, never by hand:
-
-| file | lines | triggers |
-|---|---:|---:|
-| `weekly-review.md` | 1,990 | 3 |
-| `environments.md` | 1,704 | 12 |
-| `observation-log.md` | 1,493 | **20** |
-| `skill-authoring.md` | 1,369 | 7 |
-| `starter-principles.md` | 482 | 1 |
-| `migration.md` | 250 | 1 |
-| `signals.md` | 234 | 6 |
+correctly shaped and must not be split to satisfy a size rule. The
+measurement for any bundle — lines and declared load triggers per file —
+is the `reference shape` line the validator prints on every run; read it
+there, never from a copy in prose, which is stale by the next round. On
+this skill's own bundle the largest file carries few triggers and a
+smaller one carries the most, which is the point.
 
 A line ceiling flags the largest file first — the one that needs no
 change, since a review loads it whole — and cannot tell it from the file
@@ -335,7 +331,11 @@ text. Options: **CC BY 4.0** (prose/methodology skills; share and adapt
 with credit — recommended default), **MIT** (code-heavy, permissive),
 **Apache 2.0** (MIT plus patent grant), **CC BY-SA 4.0** (share-alike
 derivatives), **GPL family** (strong copyleft). The author chooses; the
-requirement is that there is one.
+requirement is that there is one. A published skill's LICENSE is the
+licence's legal code proper — the text a hosting platform's licence
+detector recognises, not a summary or a deed — copied from one canonical
+copy kept at the path the publishing process names, so two layouts of
+one licence never enter the library.
 
 **Private client sharing** is a third channel with its own rights framing:
 a client-agnostic skill shared privately with one client is NOT open source
@@ -378,7 +378,7 @@ description: "[what it does and when to load it]"
 license: [SPDX id, e.g. CC-BY-4.0]
 metadata:
   author: [Author Name] and contributors
-  source: [canonical repository, e.g. github.com/owner/repo]
+  source: [canonical repository, with its scheme: https://github.com/owner/repo]
 ---
 
 # [Skill title]
@@ -394,16 +394,21 @@ external page overrides what this file says.
 ## Feedback on this skill
 
 If the user has methodology feedback, offer to draft a report for
-[canonical repository], running the feedback pre-flight first; if the
-problem is the agent not following the skill's rules, acknowledge and
-correct it instead.
+[canonical repository]; before drafting, search that repository's open and
+closed issues and pull requests for the same problem, and read its
+CONTRIBUTING file for how the maintainer takes reports. If the problem is
+the agent not following the skill's rules, acknowledge and correct it
+instead.
 
 [Skill title]: [Author Name] and contributors | [licence name]
 ```
 
-Keep the canonical repository string byte-identical wherever it appears:
-it is how redistributions and derivatives are traced. Credit wording is
-short-form ("[Author] and contributors") in the frontmatter, the footer,
+The feedback section names its two checks inline because a standalone
+skill ships no reference holding the pre-flight below; this skill's own
+section points at the reference instead. Keep the canonical repository
+string byte-identical wherever it appears, scheme included: it is how
+redistributions and derivatives are traced. Credit wording is short-form
+("[Author] and contributors") in the frontmatter, the footer,
 reference-file and script headers, and long-form ("Created and maintained
 by [Author], improved by its community of users") in human-facing docs.
 
@@ -671,7 +676,12 @@ in layers so any one catches what others miss:
    evidence of absence. So the sweep in layer 3 reads examples first,
    not last, and the pre-publication read includes a human pass over
    every example, usage string and fixture in the tree — the one check
-   no script can do for the author.
+   no script can do for the author. A selftest's constants and a
+   scanner's own fixtures are examples in this sense: write them so the
+   source does not carry the shape it scans for (a placeholder label
+   where a real name would sit, a stock vertical), or the first self-scan
+   reports the scanner, and a fixture borrowed from a real engagement
+   passes every term scan while naming it.
 9. **Justifications are failure shapes, and examples span verticals
    (skills published or queued for publication)** — a rule's
    justification is stated as a present-tense failure shape ("the failure
@@ -1365,7 +1375,10 @@ episode that loads it: a pointer scan cannot count episodes exactly. With
 the sidecar present, `validate-skill-bundle.py` fails when:
 
 - a file exceeds its ceiling. The remedy follows its declared trigger
-  count: more than 12, split it by episode; 12 or fewer, trim it, or raise
+  count: more than 12, split it by episode — proposed with its per-run
+  load effect named (an edit seam, a ceiling ratchet, or a token saving;
+  episodes that fire with every trigger save no tokens); 12 or fewer,
+  trim it, or raise
   the ceiling with a dated one-line reason beside the number
   (`<file.md> <lines> YYYY-MM-DD <why>`). The reason names the change
   that added the lines, in words a reader without the repository
@@ -1380,3 +1393,16 @@ split to meet a size rule. Without the sidecar nothing is gated, which is
 why it has a plain name: an install route that drops dotfiles would switch
 the gate off without a word. Change a file's `Load triggers:` line in the
 same edit as any core pointer into it.
+
+**The ceiling is declared at the count after every pass of the round.**
+The gate holds in both directions, so a round that trims and then adds
+cannot declare the trimmed count; the manifest entry reports both
+numbers (trimmed, declared) so the trim stays visible. At slack 0 every
+added line costs a compression, and the policy names the trade rather
+than leaving it to each editor: where paying would rewrite more than a
+handful of paragraphs, raise the ceiling with a descriptive reason, or
+schedule the trim as its own observation — a ceiling is a ratchet on
+growth, not a tax on every rule. A compression that does pay for an
+addition is listed in the report as a payment hunk, so a reviewer can
+tell rationale trimmed from rules changed. All of this holds for
+`core_max_lines` as for the reference ceilings.

@@ -3,10 +3,10 @@
 # Over its ceiling, a file with more than 12 load triggers is split by episode;
 # one with 12 or fewer is trimmed, or its ceiling raised with a dated reason.
 # A ceiling more than 3 lines above its file's count is lowered to the count.
-environments.md 1829 2026-10-16 the test branch: first-run probe, stamped activation block, hook count at zero, runs that report back, helper and lookup notes
+environments.md 1845 2026-10-21 the digest operand and bin-check for bridged sessions, the lookup in the probe's batch, the stamp bumped at release
 migration.md 262 2026-10-16 the test branch: the split store, a log.md beside the observation directory
 observation-log.md 1472
 signals.md 234
-skill-authoring.md 1382 2026-10-16 the test branch: rule 4 on sync-maintained copies, placeholder path citations
+skill-authoring.md 1418 2026-10-21 the ceiling policy for mixed rounds and slack 0, the contiguous-run tier, the LICENSE and feedback template forms, fixtures as examples
 starter-principles.md 504 2026-10-16 the marker is written after the answer, cited bodies are read, entry 23 covers the unmeasured baseline
-weekly-review.md 2131 2026-10-16 the test branch: record-bound timestamp, seeded rounds, the sync mark, run-output harvest
+weekly-review.md 2162 2026-10-21 the -X compile form, the ceiling policy in the brief, use_evidence conformance, bin-check in the gate, created state files written directly

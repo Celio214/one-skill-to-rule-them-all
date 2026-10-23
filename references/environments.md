@@ -268,8 +268,11 @@ it.** The block lives in the user's instruction file, outside the bundle,
 so upgrading the bundle in place leaves it on whatever template it was
 copied from, and a presence check cannot tell a current block from an old
 one: every paragraph added since is missing from that install without any
-signal. The stamp is bumped whenever the block's text changes, and
-Session Start step 4 compares it with this version's: a block whose stamp
+signal. The stamp is bumped whenever the block's text changes, with the
+version at release: text edited on a test branch ships under the stamp of
+the version that releases it, never under the released one, since two
+texts under one stamp read as the same block to step 4. Session Start
+step 4 compares the stamp with this version's: a block whose stamp
 is older, or has none, is reported in one line with the paragraphs it
 lacks, and the current block is offered whole — the file is never
 rewritten unasked. On every upgrade, diff the installed block against
@@ -929,7 +932,11 @@ the session-start scan and one `skill-load.sh` call per skill loaded in
 batch 1 — the one recorded exception to the lookup riding in its load's
 batch, because the script runs through the same deferred tool (scripts
 absent from the device: "Environment mappings", "Where the scripts are not
-on the device"). Record the split in the start-up lines ("probe in batch 2: device
+on the device"). Where the device shell is the only channel to the log,
+the per-skill lookup and its checkpoint line therefore ride in the batch
+that carries the probe, and that is not a batch-split finding: the rule
+that the lookup rides in its load's batch assumes a channel the load's
+batch has. Record the split in the start-up lines ("probe in batch 2: device
 tool deferred"), so a review reading the transcript sees an environmental
 order, not a skipped rule. The failure shape: a rule that names batch 1's
 content cannot be met when one of its tools does not exist yet, and an
