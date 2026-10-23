@@ -225,7 +225,7 @@ that twenty separate moments in a session each pull in. So
 every run, and gates growth only for a skill that opts in with per-file
 ceilings ("Reference-file ceilings — the growth barrier", below): there
 the declared count picks the remedy for a file that outgrows its ceiling,
-split above 12 triggers, trim or a reasoned raise at 12 or fewer. A split
+split above 8 triggers, trim or a reasoned raise at 8 or fewer. A split
 needs a load-observation test per moved episode (below), and never two
 structural splits in one test period — a regression could not be
 attributed to either.
@@ -1371,22 +1371,49 @@ skill that opts in. Opting in is one file, `references/ceilings.txt`, with a
 line per reference file — `<file.md> <ceiling>`, seeded at each file's
 current count — and one `Load triggers: a; b; c` line in each reference
 file's header (before its first `## ` heading), one entry per distinct
-episode that loads it: a pointer scan cannot count episodes exactly. With
-the sidecar present, `validate-skill-bundle.py` fails when:
+episode that loads it: a pointer scan cannot count episodes exactly.
+
+**A declared trigger is an episode — a reason to load the file — not a
+pointer.** One episode may be cited from several places in the core and
+may cover several sections of the file; a file a run walks once (every
+step of a cycle) has one episode and declares one trigger, however many
+of its sections the core names. The validator cross-checks the
+self-declared count against something the declarer does not control: it
+prints, beside each file's declared count, the number of distinct `## `
+sections of the core that cite the file — the cheapest lower bound on its
+episodes, since a once-per-run file is cited from the one core section
+that runs it — and notes `UNDER-DECLARED` when the declaration falls more
+than two below that bound. A note, not a gate: the failure shape is a file
+kept under the split threshold by declaring less than it is loaded for.
+With the sidecar present, `validate-skill-bundle.py` fails when:
 
 - a file exceeds its ceiling. The remedy follows its declared trigger
-  count: more than 12, split it by episode — proposed with its per-run
+  count: more than 8, split it by episode — proposed with its per-run
   load effect named (an edit seam, a ceiling ratchet, or a token saving;
-  episodes that fire with every trigger save no tokens); 12 or fewer,
+  episodes that fire with every trigger save no tokens); 8 or fewer,
   trim it, or raise
   the ceiling with a dated one-line reason beside the number
   (`<file.md> <lines> YYYY-MM-DD <why>`). The reason names the change
   that added the lines, in words a reader without the repository
   understands — the file ships inside the skill — never an issue, PR or
-  observation number;
+  observation number. The threshold comes from the measured distribution
+  over one library at last measurement, not from intuition: one to eight
+  triggers almost everywhere, three files above eight, and the two files
+  just under the earlier threshold of 12 were the ones readers described
+  as overloaded — a threshold that never fires on the files everyone
+  agrees are overloaded is set too high;
 - a ceiling sits more than 3 lines above its file: lower it in the commit
   that trimmed;
 - a file has no ceiling line or no `Load triggers:` line.
+
+A file above the threshold whose split is decided but not yet made carries
+`split_pending: <file.md> YYYY-MM-DD <why>` in the sidecar: the validator
+then prints the split remedies as notes and applies the trim-or-raise
+remedy until the split lands, so a decided restructure does not block the
+round before it. The line is read bare or behind `# `, so a round can
+write it while the installed validator still predates the marker. In this
+skill's own bundle, `environments.md` (12 triggers) is the next split
+candidate, pending a later round.
 
 Size alone never forces a split, so a single-episode file is still never
 split to meet a size rule. Without the sidecar nothing is gated, which is

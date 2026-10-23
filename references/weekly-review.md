@@ -232,6 +232,21 @@ of existing content; (3) it self-flags uncertainty ("not sure if…",
 should still apply every non-escalated item — a review that applies
 nothing is just a report generator.
 
+**Separate the recommendation from the choice before counting agreement
+as evidence.** A decision that is SUBSTANTIVE — it changes a rule, retires
+a prior decision or sets a value — is presented as unlabelled options in a
+neutral order, and the recommendation is stated only after the pick is
+recorded, or in a separate line the user can skip; a status-quo
+confirmation (keep what is installed, keep the ceiling where it landed)
+stays recommendation-first, where the label costs nothing. The record
+notes per decision whether it was status-quo or substantive and whether
+the pick matched the recommendation; only the substantive, unlabelled
+picks feed the acceptance rate, and the tier moves only after a handful
+of reviews. The failure shape: every decision presented
+recommendation-first and labelled is accepted, and the loop cannot tell
+good recommendations from anchoring — yet reads the number as grounds to
+loosen.
+
 Criterion (2) is about whose judgement is driving the change, not about
 the size of the diff. Where the observation records the removal or
 restructure as DECIDED by the user AND carries a complete specification
@@ -795,7 +810,12 @@ or outstanding principles", update the timestamp, and stop.
 **Step 2 — inventory skills and classify each write target by whether
 an edit SURVIVES, not by whether it succeeds.** List all skills (system
 prompt `<available_skills>` or the skills directory) and put each into one
-of three categories:
+of three categories. Project-level skill directories (a project's
+`.claude/skills/`, where the harness surfaces them) are listed and
+classified too, and a project skill that duplicates an account skill is
+named as such: two copies of one skill drift exactly like two copies of
+one rule, and an inventory that reads one surface never sees the other.
+The categories:
 
 | Category | Detection | Action |
 |---|---|---|
@@ -1174,6 +1194,9 @@ the summary carries.
    a change with neither does not merge; it stays on the branch for
    another cycle. The checks themselves come from the branch's test-plan
    observation, which is in this review's queue by procedure (below).
+   Where the branch changed the form of a session-start step (prose to
+   a ticked checklist), the merge report records once whether
+   loaded-but-not-run omissions fell against the previous cycle.
 2. **Read the repo's open issues and pull requests.** They are review
    inputs alongside the observation log — the review is the only point
    at which including a contribution costs nothing extra, and a channel
@@ -1253,7 +1276,10 @@ the summary carries.
    week. Both are staged copies under `skill-updates/` with their own
    manifest entries; neither is pushed by the review. For a skill under
    test the review also writes each round's per-file diff against the
-   branch line beside the staging — `<anchor>/<skill>.round.diff`, every
+   branch line beside the staging — `<anchor>/<skill>.round.diff`, built
+   with `diff -ruN` (never `-ru`: without `-N` a file added in the round
+   is an `Only in` line no label can carry, so a new script silently
+   leaves the classified diff), every
    hunk labelled with its class and its observation id — and the
    PUBLISHING session commits it, one commit per classified change; the
    review stays clone-free. Where a hunk would mix two observations'
