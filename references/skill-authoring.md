@@ -798,7 +798,9 @@ record how to obtain it.
 3. Before overwriting any staged/workspace copy, diff it against the live
    file; if they differ, rebase your edits on the live version.
 4. Before any cross-copy sync or publish work (live install, workspace
-   copies, published repo/branch), enumerate all copies of the artefact
+   copies, published repo/branch; the install instructions too —
+   weekly-review.md, Staging manifest, the copy list), enumerate all
+   copies of the artefact
    and establish freshness PER COPY from evidence — mtime, content
    probes, hashes — never from role ("the repo", "the live version");
    then pick the base explicitly. A copy that a sync process maintains

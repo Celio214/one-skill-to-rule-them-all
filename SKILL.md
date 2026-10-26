@@ -204,7 +204,8 @@ skill" (some upload paths keep only `SKILL.md`); its episodes do not run.
    verifies a working setup and cannot detect a never-activated install;
    outside checks: that reference.
 5. **Concurrency.** No shared log file to guard: each observation is its
-   own file; re-read one before changing its *status* (How to Log).
+   own file; re-read one before changing its *status* (How to Log). Parallel
+   sessions on one skill log the same findings: a fan-out expects restatements.
 6. **Targets and staged work.** Resolve each distinct `skill:` value in
    the scanned frontmatter against the installed skill set and mention, in
    one line, any that no longer resolve — and any that resolve but cannot

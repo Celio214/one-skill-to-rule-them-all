@@ -1405,7 +1405,7 @@ snippet through the device shell. Never a hand-derived id.
 | Persistent workspace | the shared folder | pinned absolute path (see activation block) | none — handoff-doc mode below |
 | Live skill files | `.claude/skills/{skill}/` on a read-only mount (writes fail with EROFS) | `~/.claude/skills/{skill}/`, ordinary writable files — no guard | n/a |
 | Present a staged file for install | the file-presentation tool (`present_files`) with its upload button | none — report the staged path and a change summary in chat | paste into the handoff doc |
-| Scheduled review | the app's scheduled tasks (cloud-default: run remotely; legacy local mode: run on the user's machine, only while it is on — see the execution-mode note above) | cron / a harness `SessionStart` hook / an account-level scheduler that can reach the workspace — headless invocations carry the workspace grant (`--add-dir`) in the task definition | calendar reminder + manual trigger |
+| Scheduled review | the app's scheduled tasks (cloud-default: run remotely; legacy local mode: run on the user's machine, only while it is on — see the execution-mode note above) | cron / an account-level scheduler that can reach the workspace — headless invocations carry the workspace grant (`--add-dir`) in the task definition; a `SessionStart` hook reports the review state, it does not run the review | calendar reminder + manual trigger |
 | Session-start hook | none | `SessionStart` hook (`hookSpecificOutput.additionalContext`) | none |
 | Local-vs-cloud tell | `allow_cowork_file_delete` present ⇒ local session | n/a | n/a |
 
@@ -1418,6 +1418,9 @@ here). Register it as any local scheduler: the workspace grant goes into
 the task definition, and the first "Run now" of the task itself is the
 grant check (the access-grant paragraph below). The tell is a
 scheduled-task tool on the tool surface; absent, the CLI column applies.
+Where scheduled sessions already run for other jobs, register a dedicated
+`weekly-skill-review` task all the same: none of them reviews unprompted
+("Sessions whose output channel is owned by a caller").
 
 Grow the table when a new environment appears; do not scatter its tool
 names through the procedure files.
@@ -1460,9 +1463,17 @@ review therefore includes whatever allowed-directory configuration the
 harness needs for the workspace root — for Claude Code headless,
 `--add-dir "[ABSOLUTE PATH]"` on the invocation, or the equivalent
 permissions rule — and the setup is not done until one firing has
-reached the workspace **from inside the task's own execution context**:
+reached the workspace **and left one write there** (the review record or
+`last-review-date.txt`) **from inside the task's own execution context**:
 an interactive test proves nothing about the sandbox the scheduler
-creates, and a task the scheduler lists is not a run that succeeded.
+creates, a task the scheduler lists is not a run that succeeded, and a
+firing whose report says a write was refused is a failed setup, not a
+review that ran. Claude Code headless (`claude -p`) can refuse writes
+under `~/.claude/` through the Edit and Write tools as a sensitive file,
+with nobody present to approve, while Bash writes pass (reported on one
+install; whether a settings allow-rule lifts it is untested): for a
+scheduled review, anchor the workspace outside `~/.claude/` or prove the
+write on the first firing.
 (The run-time skip note: `references/weekly-review.md`, offline-workspace
 policy.)
 
@@ -1570,6 +1581,10 @@ fully in force, because the write is the only report there is: anything
 that would have been surfaced becomes an observation file naming the
 condition that fired, so the next interactive session inherits it; name
 the caller in `session_context`, and log only what the caller cannot see.
+An overdue review is review state (`last-review-date.txt` already carries
+it), not a new finding per run: log it at most once per review interval,
+only when no open entry names it, as "review overdue since <date>, N
+unattended runs".
 
 **A run that cannot write, or cannot get an approval answered, skips the
 write steps and reports back instead.** Three shapes: a child run with
