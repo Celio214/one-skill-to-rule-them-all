@@ -264,13 +264,13 @@ restructure of a published skill needs a release branch, a test plan and
 a version bump, which an unattended run cannot decide alone — but
 "escalate without applying" is the wrong shape for that protection,
 because staging is not publishing: nothing reaches the repository until
-the publishing run, which already holds on `under_test` and on its
+your publishing step, which already holds on `under_test` and on its
 freshness gate. So a user-decided, fully specified restructure of a
 published skill IS applied by the scheduled run, as a staged copy that
 (a) bumps the version by at least a minor; (b) is flagged as the first
 diff in the summary with the explicit line "published skill — install and
 the release are your call"; (c) carries a manifest entry that names it as
-a restructure, so the publishing run routes it to a release branch with a
+a restructure, so your publishing step routes it to a release branch with a
 test plan under the standing rule for branches (Step 5); and (d) leaves
 the observation `open`, with the staged path in a `reference:` note, so
 the next review's presence check closes it once the copy is installed
@@ -1236,7 +1236,7 @@ the summary carries.
    moved file, because "the substance was kept" is a feeling, not a check.
    Record in the staging manifest both the classification and, per
    include-now item, the reporter's **GitHub login and numeric user ID** —
-   the publishing run needs both to write a trailer GitHub can resolve
+   your publishing step needs both to write a trailer GitHub can resolve
    (`Co-authored-by: Name <ID+login@users.noreply.github.com>`, or
    `Reported-by:` for a bare report); credit written as prose in a commit
    body is credit the platform cannot see.
@@ -1299,7 +1299,7 @@ the staging manifest entry (`PENDING.md`) so the publishing sync applies
 it. Where a published skill carries no `version:` and no repo manifest
 holds one, the review adds the field and the bump in the same staging —
 `1.0.0`, or the next minor above what the README or the release history
-implies — never deferring either to the publishing run, which cannot
+implies — never deferring either to your publishing step, which cannot
 bump a version nobody has set: a hold that tests "version unchanged"
 finds it absent both times and stalls the sync. Either way the manifest
 entry states the bump. Whoever changes the content owns the bump; the
@@ -2059,12 +2059,12 @@ artefact is always the `.skill` bundle, so the entry never distinguishes
 a single-file from a multi-file skill. For a published skill it also
 carries the community-item classification from Step 5 (include now /
 test branch / declined, with the reason), per included item the
-reporter's GitHub login and numeric id, so the publishing run's commit
+reporter's GitHub login and numeric id, so your publishing step's commit
 can write the crediting trailer without going back to the API, and the
 version bump for published skills (the new version, or the intended
 bump where the version lives only in the repo's manifest) — and, where
 the staging is a user-decided restructure of a published skill (Approval
-policy), the word `restructure`, so the publishing run routes it to a
+policy), the word `restructure`, so your publishing step routes it to a
 release branch with a test plan rather than to `main`. The manifest is
 what the Session Start Protocol reads to announce "N staged updates
 awaiting review", so staged work is never quietly forgotten; the
