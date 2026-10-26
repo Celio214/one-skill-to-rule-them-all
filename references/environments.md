@@ -236,7 +236,11 @@ not run it again and does not write to the log. The controller observes,
 because only it sees the whole task and its review; a subagent that
 notices something worth logging says so in its final report, and the
 controller writes it, running the id snippet per write. A start-up rule
-in a project file reaches every agent the project ever dispatches.
+in a project file reaches every agent whose working folder is inside the
+project — a subagent, or a session started there. When this session starts
+another session (not a subagent), pass it a working folder inside the
+project, or the workspace root, so the block is in context from its first
+turn; a folder named only in the brief does not load it.
 Before briefing a delegate under an agent definition or instructions
 file, run the lookup for that file's name; its open entries shape the
 brief.
@@ -275,8 +279,10 @@ texts under one stamp read as the same block to step 4. Session Start
 step 4 compares the stamp with this version's: a block whose stamp
 is older, or has none, is reported in one line with the paragraphs it
 lacks, and the current block is offered whole — the file is never
-rewritten unasked. On every upgrade, diff the installed block against
-this template; a block copied without its stamp line is read as unstamped.
+rewritten unasked. On every upgrade, list every config home that holds a
+copy of the skill and upgrade them together, then diff each installed
+block against this template; a block copied without its stamp line is read
+as unstamped.
 
 **Before writing a user-scope block, list its non-interactive consumers.**
 A block in a user-level instruction file reaches every run that file
@@ -311,7 +317,11 @@ chance to get it wrong. Pin the ROOT, and list the derived paths: a pin
 that names only the observation-log directory — the place split-brain was
 first noticed — leaves the staging root, the manifest and the principles
 file to be re-derived by every session, and parallel sessions resolve
-them plausibly and differently. Where the environment provides a managed persistence directory
+them plausibly and differently. Where Claude Code runs with more than one
+config home (`CLAUDE_CONFIG_DIR`), the default `~/.claude/…` resolves per
+profile: choose one absolute workspace path at install, pin it in every
+profile's activation text and hook, and install the activation in every
+profile that holds the skill. Where the environment provides a managed persistence directory
 under the project identity (a memory directory it loads every session),
 that directory and the identity root are both "stable"; anchor inside the
 managed directory when one exists, otherwise on the identity root — never
@@ -1623,7 +1633,9 @@ The skill is least valuable at the moment it is adopted: the log is empty,
 a review correctly reports nothing to do, and the largest pile of
 uncaptured insight — the project's own history — is never touched because
 no procedure says to touch it. Session Start step 7 offers a one-off
-mining pass over handover, architecture and decision docs, commit history
+mining pass — first over the harness's own per-project memory folders
+(Claude Code's `memory/`), whose `feedback` files are corrections already
+saved once — then over handover, architecture and decision docs, commit history
 since the last release, test and verification scripts (which encode
 hard-won discipline densely), and existing agent-instruction files, which
 are largely a record of corrections the user already had to make.

@@ -570,7 +570,19 @@ filename left alone unless the id is the field at fault.
 **And key the merge on the filename, not the id**, wherever a review fans
 reading out and merges results: the filename is unique by construction
 (the noclobber create guarantees it), and a merge keyed on the one field
-that can collide has no way to notice that it did.
+that can collide has no way to notice that it did. After any fan-out, and
+before the decision list is written, the set of filenames with a result
+equals the Step 1 list:
+
+```bash
+l="[ABSOLUTE PATH]/skill-observations/review-step1-list.txt"
+r="<file of the returned names, one per line>"
+LC_ALL=C sort -u "$r" | LC_ALL=C comm -3 "$l" -
+```
+
+A line at the margin is a queued file with no result — an unreviewed
+entry, not a clean one; an indented line is a result for a file never
+queued. Triage both before presenting; silence is the pass.
 
 **Parked entries: excluded from the queue, not from view.** `status: parked`
 means the observation was judged sound but is blocked on an external

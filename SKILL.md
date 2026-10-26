@@ -31,7 +31,8 @@ cwd inside an ephemeral checkout — a git worktree under
 and takes the observations with it. **Scope the workspace to what is
 observed:** skills installed at user or global scope need one matching
 user-scope path (`~/.claude/skill-observations/` or the equivalent outside
-any project), shared across projects, tools and agents; keep a per-project
+any project — written as an absolute path when more than one config home
+exists), shared across projects, tools and agents; keep a per-project
 anchor only for skills that exist in that project alone: a per-project
 default silently shards one log into many, each complete from inside. Never
 place the workspace inside a skills-discovery directory. Before creating one, search
@@ -236,6 +237,8 @@ discussion, meta-discussion about skills or methodology, and strategy
 conversations about how work should be done. **The observation mindset
 does not deactivate when the conversation shifts from doing the work to
 discussing it**; review-phase feedback is often the highest-signal input.
+A user correction the harness saves to its own memory (a `feedback` memory
+file) is an observation trigger too, never a substitute for the entry.
 Inactive only for casual conversation and tool-free factual questions.
 
 ## What to Watch For
