@@ -144,9 +144,11 @@ There is no donation button: the project is free and community-driven, and the h
 
 ## License
 
-This work is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). The licence text is in [LICENSE](./LICENSE); the link above is the human-readable summary.
+This work is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). [LICENSE](./LICENSE) is the full, unmodified legal code as Creative Commons publishes it; the link above is the human-readable summary.
 
 You're free to use, adapt, and redistribute — even commercially — as long as you give appropriate credit: Link to the original repo (https://github.com/rebelytics/one-skill-to-rule-them-all/) and name the author (Eoghan Henn / rebelytics.com).
+
+Copyright (c) 2026 Eoghan Henn / rebelytics.com
 
 ## Further reading
 

@@ -332,10 +332,12 @@ with credit — recommended default), **MIT** (code-heavy, permissive),
 **Apache 2.0** (MIT plus patent grant), **CC BY-SA 4.0** (share-alike
 derivatives), **GPL family** (strong copyleft). The author chooses; the
 requirement is that there is one. A published skill's LICENSE is the
-licence's legal code proper — the text a hosting platform's licence
-detector recognises, not a summary or a deed — copied from one canonical
-copy kept at the path the publishing process names, so two layouts of
-one licence never enter the library.
+licence's full legal text, unmodified, as the licensor publishes it — the
+text a hosting platform's licence detector recognises, not a summary or a
+deed, with no copyright line added and no part trimmed — copied from one
+canonical copy kept at the path the publishing process names, so two
+layouts of one licence never enter the library. The credit line (who holds
+the copyright, under which licence) goes in the README's licence section.
 
 **Private client sharing** is a third channel with its own rights framing:
 a client-agnostic skill shared privately with one client is NOT open source
@@ -798,7 +800,9 @@ record how to obtain it.
 3. Before overwriting any staged/workspace copy, diff it against the live
    file; if they differ, rebase your edits on the live version.
 4. Before any cross-copy sync or publish work (live install, workspace
-   copies, published repo/branch), enumerate all copies of the artefact
+   copies, published repo/branch; the install instructions too —
+   weekly-review.md, Staging manifest, the copy list), enumerate all
+   copies of the artefact
    and establish freshness PER COPY from evidence — mtime, content
    probes, hashes — never from role ("the repo", "the live version");
    then pick the base explicitly. A copy that a sync process maintains

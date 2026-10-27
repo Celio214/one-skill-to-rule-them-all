@@ -1207,6 +1207,10 @@ when its `parked_until:` condition is met) and why the decision belongs in
 can happen at all: ask who or what would have to act to meet it, and
 whether that party has a reason to do exactly the opposite (sometimes as
 the intended effect of the very thing the entry is waiting to observe).
+When the result depends on work tracked elsewhere — a ticket, issue or
+PR — read it before parking: confirm its own text names the observation
+or states its fix, and quote the matching line in `resolution:`;
+otherwise add the observation to that ticket, or park on another trigger.
 If the condition cannot occur, the entry is not waiting: close it on the
 substitute evidence available today, or park it on a trigger that can
 actually fire — phrased on the result in the target, never on the state

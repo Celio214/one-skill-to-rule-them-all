@@ -169,7 +169,8 @@ Given the roots:
 
 **Interactive (user present):** always present observations grouped by
 skill (number, title, one-sentence summary), flag judgment calls as "needs
-your input", and wait for blanket or selective approval before applying.
+your input" (after the records were searched: "Retrieve before you
+escalate", below), and wait for blanket or selective approval before applying.
 The grouped list lives in the review record and chat carries at most
 three next steps with a link to it (Step 3); the approval it asks for is
 still over the whole list.
@@ -203,7 +204,8 @@ once the user has chosen to contribute. Forked files need the check at
 two levels: file-level provenance ("this skill is foreign-maintained")
 and section-level provenance ("the section this observation extends is a
 local addition") are separate statements, both answerable from the local
-copy, and routing to upstream-vs-fork depends on the second.
+copy, and routing to upstream-vs-fork depends on the second, asked per
+edit at the Step 5 presence check.
 A declined or dismissed approval prompt is NOT approval — and it is not a
 request to skip the asking and proceed either. Treat it as a stop signal
 for the gated actions: halt, then ask in plain chat text what the user
@@ -264,19 +266,27 @@ restructure of a published skill needs a release branch, a test plan and
 a version bump, which an unattended run cannot decide alone — but
 "escalate without applying" is the wrong shape for that protection,
 because staging is not publishing: nothing reaches the repository until
-the publishing run, which already holds on `under_test` and on its
+your publishing step, which already holds on `under_test` and on its
 freshness gate. So a user-decided, fully specified restructure of a
 published skill IS applied by the scheduled run, as a staged copy that
 (a) bumps the version by at least a minor; (b) is flagged as the first
 diff in the summary with the explicit line "published skill — install and
 the release are your call"; (c) carries a manifest entry that names it as
-a restructure, so the publishing run routes it to a release branch with a
+a restructure, so your publishing step routes it to a release branch with a
 test plan under the standing rule for branches (Step 5); and (d) leaves
 the observation `open`, with the staged path in a `reference:` note, so
 the next review's presence check closes it once the copy is installed
 rather than re-applying it. What stays escalated is the decision the run
 cannot make — cut a branch or ship from main, and when — never the
 mechanical work.
+
+**Retrieve before you escalate.** Before an item goes to the user, in
+either mode, name the question it asks and the records that could answer
+it — the project's history, archives, decision notes, code and
+configuration — and look. Escalate only when they are silent, disagree,
+or the decision is the user's by authority rather than by knowledge.
+"Confirm with the owner" in an observation is a lead to a record, not an
+escalation trigger. Under each escalated item, list the records checked.
 
 Escalate one decision per cluster (Step 3).
 
@@ -325,7 +335,8 @@ the workspace folder (regime 2), do NOT offer registration — recommend
 the calendar-reminder-plus-manual-trigger pattern instead, and skip the
 rest of this step. Otherwise offer to set one up. Yes → register it
 through whatever scheduler the environment provides (the environment
-table in `references/environments.md`), name it `weekly-skill-review`,
+table in `references/environments.md`) — a scheduler is a task that
+starts a run whose prompt asks for the review; a hook is not one — name it `weekly-skill-review`,
 use the draft prompt at `skill-observations/scheduled-task-draft.md` if
 present, then verify the registration actually succeeded (the scheduler
 lists the task, or the platform confirmed creation) BEFORE writing
@@ -336,10 +347,12 @@ verified, do NOT write the marker — it would permanently suppress the
 fallback while no review ever runs. Tell the user registration failed
 and leave the fallback active. A listed task is a registration, not a working setup:
 the registration carries whatever allowed-directory grant the harness's
-sandbox needs for the workspace root, the first firing's own report is
-the completion check, and a first run that ends with a denial note — the
-workspace exists, the task's sandbox cannot reach it — is a missing grant
-on the task definition, never an outage the next firing catches up on
+sandbox needs for the workspace root, the completion check is one
+firing that reached the workspace AND left one write there (the review
+record or `last-review-date.txt`) from inside the task's own context, and a
+first run that ends with a denial note — the workspace exists, the task's
+sandbox cannot reach it or refused the write — is a failed setup on the
+task definition, never an outage the next firing catches up on
 (`references/environments.md`, "The access grant is part of the task
 definition"). No → write today's date to
 `scheduled-review-decline.txt` (suppresses for 30 days; repeated fallback
@@ -557,7 +570,19 @@ filename left alone unless the id is the field at fault.
 **And key the merge on the filename, not the id**, wherever a review fans
 reading out and merges results: the filename is unique by construction
 (the noclobber create guarantees it), and a merge keyed on the one field
-that can collide has no way to notice that it did.
+that can collide has no way to notice that it did. After any fan-out, and
+before the decision list is written, the set of filenames with a result
+equals the Step 1 list:
+
+```bash
+l="[ABSOLUTE PATH]/skill-observations/review-step1-list.txt"
+r="<file of the returned names, one per line>"
+LC_ALL=C sort -u "$r" | LC_ALL=C comm -3 "$l" -
+```
+
+A line at the margin is a queued file with no result — an unreviewed
+entry, not a clean one; an indented line is a result for a file never
+queued. Triage both before presenting; silence is the pass.
 
 **Parked entries: excluded from the queue, not from view.** `status: parked`
 means the observation was judged sound but is blocked on an external
@@ -567,7 +592,10 @@ never archives and stays in `observation-log/`. Two things happen to it in
 every review, while the frontmatter is already in hand: (a) re-check each
 `parked_until:` condition against the current state of the world, and where it
 has been met, set the entry back to `status: open`, clear `parked_until:`, and
-carry it into this review's queue; (b) list every still-parked entry in the
+carry it into this review's queue — where the entry names a ticket, issue
+or PR, confirm it still names the entry; one closed as moved or duplicated
+names its successor in a comment or link: follow it and record the new
+one in `resolution:`; (b) list every still-parked entry in the
 Step 7 summary in ONE LINE each — id, title, unpark condition — so a parked
 backlog stays visible without re-entering the work queue. A condition
 phrased on the state of a vehicle — a PR merged or closed, a ticket
@@ -725,10 +753,13 @@ byte-identical and the normalisation is the backstop.
 
 **A staged state file is reconciled by its recorded hash, not by a diff.**
 For each file under `skill-updates/<date>/_target-files/` (Delivery, "State
-files are staged as a patch"), re-hash the live file and compare it with
-the byte size and sha256 the manifest entry recorded at staging. Hash
-unchanged → the instruction may say "apply the patch — copy is safe", since
-the patch applies to exactly the file it was made from. Hash changed → the
+files are staged as a patch"), re-check the live path against all four
+things the manifest entry recorded at staging — size, sha256, type and
+resolved path. All four unchanged → the instruction may say "apply the
+patch — copy is safe", since the patch applies to exactly the file it was
+made from. Type or resolved path changed → "target is now
+a symlink to <resolved>; apply the patch to that path, never `mv` or `cp`
+over the link", whatever the hash says. Hash changed → the
 gate reports "staged patch, live file has moved — apply the N changed
 lines, do not copy", with N counted from the patch, and
 rewrites the entry's instruction to say so. Every added line of the patch
@@ -844,7 +875,14 @@ only what refreshes its directory. Where the user has adopted a vendored
 copy on purpose, record it once, one line per skill in
 `skill-observations/forked-skills.txt` (name, date, reason): later
 reviews read the decision instead of re-deriving it from the path, and a
-recorded fork is (a). This skill is the standing example: wherever the
+recorded fork is (a). A skill installed from an export (`git archive`, a
+copy of a commit) of a repository the user maintains is (a), but its write
+target is the repository, not the install: apply the change on a branch or
+commit there (`environments.md`, "Git as an optional staging medium"),
+stage the export of that commit and name the commit in the manifest, so
+the staged copy, the install and the master start equal; where the install
+is ahead of the repository, bring the repository level first (Step 5,
+"Seed from the CURRENT state"). This skill is the standing example: wherever the
 user is not its maintainer, `task-observer` is (b). Choosing the
 companion route may mean creating the `{skill}-extras` skill in this
 review, which the Constraints allow as the one exception to "no new
@@ -1236,7 +1274,7 @@ the summary carries.
    moved file, because "the substance was kept" is a feeling, not a check.
    Record in the staging manifest both the classification and, per
    include-now item, the reporter's **GitHub login and numeric user ID** —
-   the publishing run needs both to write a trailer GitHub can resolve
+   your publishing step needs both to write a trailer GitHub can resolve
    (`Co-authored-by: Name <ID+login@users.noreply.github.com>`, or
    `Reported-by:` for a bare report); credit written as prose in a commit
    body is credit the platform cannot see.
@@ -1299,7 +1337,7 @@ the staging manifest entry (`PENDING.md`) so the publishing sync applies
 it. Where a published skill carries no `version:` and no repo manifest
 holds one, the review adds the field and the bump in the same staging —
 `1.0.0`, or the next minor above what the README or the release history
-implies — never deferring either to the publishing run, which cannot
+implies — never deferring either to your publishing step, which cannot
 bump a version nobody has set: a hold that tests "version unchanged"
 finds it absent both times and stalls the sync. Either way the manifest
 entry states the bump. Whoever changes the content owns the bump; the
@@ -1416,11 +1454,14 @@ and a stale local file looks exactly like a fresh one.
 
 So before seeding, fetch the upstream revision of every file about to be
 edited and diff it against live: identical → seed from live and record the
-revision; divergent → pull upstream first, seed from that, and re-check
+revision; divergent with upstream ahead → pull upstream first, seed from that, and re-check
 whether the observation is already addressed there, because a maintainer
 who fixed it differently and better is the common case. This is the
 write-time state check the procedure already requires of shared logs,
-applied to the agent's own tools. Name the revision staged from in the
+applied to the agent's own tools. Divergent with live ahead — an install
+exported from a repository the user maintains (Step 2) — means the
+repository is behind: bring it level with live before seeding, never
+seed from the older copy. Name the revision staged from in the
 Step 7 summary.
 
 Two things fall out of the same fetch. It settles **section-level
@@ -1467,7 +1508,12 @@ is already-applied only when every point has its line, and one point
 without a line makes it partially-applied, whatever the title suggests;
 a point that joins several conditions (A and B) counts as one point per
 condition (`observation-log.md`, "Read the full body before resolving,
-dismissing, fixing or citing"). Classify against the
+dismissing, fixing or citing"). For a skill with a recorded fork, ask per
+point, every time, where the edit lands: a section recorded as fork-local
+in the skill's provenance record (its `SOURCE.md` or equivalent), or a
+local addition at the seed revision, is staged; any other section routes
+the point to the upstream report and is not staged — the seed-time fetch
+supplies the answer, the presence check asks it per edit. Classify against the
 **Issue** as well as the suggestion: `already-applied` needs both — the
 suggestion's substance is present AND the failure the Issue describes
 can no longer occur. Where the suggestion is present but the failure
@@ -1490,8 +1536,16 @@ the ones added now. Then
 produce an updated SKILL.md: integrate insights into the sections where
 they belong (never append an observations list at the bottom); preserve
 structure, voice, and attribution; place new rules where they logically
-live. Follow the editing rules in `references/skill-authoring.md` (live
-file as base, staging, diff-before-overwrite).
+live. For a `synced-duplicates` family the shared rule's TEXT is identical
+in every member — the drift audit greps for it — so it outranks a member's
+local presentation: where a numbering scheme or list form would force
+per-member wording, write the rule in a neutral form that belongs to no
+member (unnumbered, same order everywhere, no invented identifiers) and
+record the choice in the Step 7 Family coherence block. Follow the editing
+rules in `references/skill-authoring.md` (live file as base, staging,
+diff-before-overwrite), and the destination's own authoring rules where it
+has them — a repository that caps the routing file takes additions in the
+references it points to.
 
 Rewrite additions for the skill's reader rather than copying observation
 prose: put the rule first, use one idea per sentence and at most one example
@@ -1577,7 +1631,12 @@ agent-to-agent widening of a brief that forbade writes as laundering and
 refuses the write, and the same edit retried by another agent is refused
 as a bypass. Where the user's instruction is outcome-level ("include
 everything that needs no testing"), get their explicit go for the writes
-before fanning out, and quote it in every brief. The
+before fanning out, and quote it in every brief. The approved item's
+specification travels the same way: pasted from the review record, never
+restated; anything the parent adds goes in a separate "controller notes"
+block, and before dispatch the parent diffs the brief's spec lines against
+the record. A delegated build follows the brief, not the approval, so a
+paraphrase is a new, unapproved spec. The
 parent runs `scripts/validate-skill-bundle.py` on EVERY staged skill
 BEFORE any status bookkeeping — a subagent's "done" is a claim about its
 own edits, and the validator is the one check that sees the file the
@@ -1716,8 +1775,8 @@ prunes `reviews/`, and old ones are the user's to delete.
 
 Step 7 ends with the line **"N bundles staged, N bundles presented"**, and
 the run does not finish while the two numbers differ. A second line follows
-it: **"keep-two: N copies pruned, N kept as uninstalled, N pending a
-grant"** — the keep-two prune (Delivery) is a fixed step of every review,
+it: **"keep-two (as of HH:MM): N copies pruned, N kept as uninstalled, N
+pending a grant"** — the keep-two prune (Delivery) is a fixed step of every review,
 over the whole `skill-updates/` tree rather than only this round's skills,
 and a review that skipped it cannot write the line. Both are measured:
 staged from the bundles this run packed, presented from the delivered-file
@@ -1779,7 +1838,7 @@ from M files, or the path not read; or "none"]
 [items with reasons]
 
 [N] bundles staged, [N] bundles presented
-keep-two: [N] copies pruned, [N] kept as uninstalled, [N] pending a grant
+keep-two (as of [HH:MM]): [N] copies pruned, [N] kept as uninstalled, [N] pending a grant
 ```
 
 **Interactive mode only:** wait for the user to acknowledge before other
@@ -1898,7 +1957,11 @@ for a file whose path contains `template` (case-insensitive) or whose
 first line is the marker `<!-- template: slots intentional -->`: in a
 reference file that IS a template for a delegate author, the slots are
 the deliverable, not residue; every other residue rule and gate item
-still runs on such a file. One further item is
+still runs on such a file; (8) where the live skill sits in a repository
+with its own checks — CI, lint, skill evals, a size cap on SKILL.md —
+they run against the staged copy, and the manifest entry records the
+command and its result, or `not run here`; a skill whose checks did not
+run is never reported under "all bundles pass". One further item is
 a named human read, not an assertion: for a skill that is published or
 queued for publication, confidentiality layer 9 in
 `references/skill-authoring.md` over every section added since the last
@@ -1942,7 +2005,11 @@ prune, list for each skill every staged copy of it under
 `skill-updates/`, newest round first, with its reconciliation state —
 (a) identical, (b) superseded, (c)/(d) uninstalled; only installed
 copies after the second are candidates. The offer shows that per-skill
-table, so the user approves the list the rule produced, not a
+table with the time it was derived and the command that derives it (the
+delayed-send rule above applies: a grant can be pending for hours); a prune
+performed later re-derives the list and prunes only when it equals the
+approved one, otherwise it shows the difference and stops. The table is
+there so the user approves the list the rule produced, not a
 description of round directories: the two views diverge at a round that
 stages a skill for the first time in several rounds, whose previous copy,
 in an older directory, is that skill's only rollback.
@@ -1960,6 +2027,17 @@ only gate. Before staging, run the script offline on payloads built from the rea
 tool record (`signals.md`, "Second violation — why a barrier, not a
 rewording"); after install, the next session confirms it refuses the real
 command and passes a legitimate one.
+
+**Confirming a skill install is the reconciliation gate, not a byte
+compare.** After the user installs, classify each delivered copy with the
+gate's four-way test (Step 1): (a) and (b) are installed, as the keep-two
+rule reads them; (c) and (d) are not; a missing file is a failure; a
+staged line not found in live is listed for the per-hunk read, never
+passed. State files keep their hash rule, and a skill whose master is a
+repository (Step 2) is also compared with the commit the manifest names.
+Run the same check once against the pre-install backup, where it must
+report the round's lines missing — a verification that cannot come out
+negative is not one (`skill-authoring.md`).
 
 **Non-skill files are split by owner.** The files this skill's review owns
 in the observation workspace — `cross-cutting-principles.md`,
@@ -1987,8 +2065,11 @@ changes one stages it under
 `skill-updates/<date>/_target-files/` as a patch: a unified diff against
 the live file (`diff -u "$live_file" "$changed" > "<file>.patch"`), or the
 changed lines with enough context to place them. Its manifest entry
-records the live file's byte size and sha256 at staging time
-(`wc -c < "$live_file"`; `sha256sum` on GNU, `shasum -a 256` on macOS),
+records four things about the live path at staging time: byte size
+(`wc -c < "$live_file"`), sha256 (`sha256sum` on GNU, `shasum -a 256` on
+macOS), type (link or regular file, `[ -L "$live_file" ]`) and resolved
+path (`realpath`; `readlink -f` on GNU) — a content match proves nothing
+about whether the path still means what it meant,
 which the reconciliation gate re-checks before repeating any install
 instruction (Step 1, "A staged state file is reconciled by its recorded
 hash"). The failure shape: every run writes a state file, so a snapshot
@@ -2059,12 +2140,12 @@ artefact is always the `.skill` bundle, so the entry never distinguishes
 a single-file from a multi-file skill. For a published skill it also
 carries the community-item classification from Step 5 (include now /
 test branch / declined, with the reason), per included item the
-reporter's GitHub login and numeric id, so the publishing run's commit
+reporter's GitHub login and numeric id, so your publishing step's commit
 can write the crediting trailer without going back to the API, and the
 version bump for published skills (the new version, or the intended
 bump where the version lives only in the repo's manifest) — and, where
 the staging is a user-decided restructure of a published skill (Approval
-policy), the word `restructure`, so the publishing run routes it to a
+policy), the word `restructure`, so your publishing step routes it to a
 release branch with a test plan rather than to `main`. The manifest is
 what the Session Start Protocol reads to announce "N staged updates
 awaiting review", so staged work is never quietly forgotten; the

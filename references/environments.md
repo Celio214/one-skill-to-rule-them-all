@@ -144,7 +144,7 @@ skill that never loads cannot announce that it was relevant.
 ### The activation block
 
 ```text
-(task-observer activation block — template of v3.8.0)
+(task-observer activation block — template of v3.8.1)
 Before the first tool call of any session — and before writing or
 proposing a plan, not merely before executing one — invoke the
 task-observer skill AND execute its Session Start Protocol (storage
@@ -236,7 +236,11 @@ not run it again and does not write to the log. The controller observes,
 because only it sees the whole task and its review; a subagent that
 notices something worth logging says so in its final report, and the
 controller writes it, running the id snippet per write. A start-up rule
-in a project file reaches every agent the project ever dispatches.
+in a project file reaches every agent whose working folder is inside the
+project — a subagent, or a session started there. When this session starts
+another session (not a subagent), pass it a working folder inside the
+project, or the workspace root, so the block is in context from its first
+turn; a folder named only in the brief does not load it.
 Before briefing a delegate under an agent definition or instructions
 file, run the lookup for that file's name; its open entries shape the
 brief.
@@ -275,8 +279,10 @@ texts under one stamp read as the same block to step 4. Session Start
 step 4 compares the stamp with this version's: a block whose stamp
 is older, or has none, is reported in one line with the paragraphs it
 lacks, and the current block is offered whole — the file is never
-rewritten unasked. On every upgrade, diff the installed block against
-this template; a block copied without its stamp line is read as unstamped.
+rewritten unasked. On every upgrade, list every config home that holds a
+copy of the skill and upgrade them together, then diff each installed
+block against this template; a block copied without its stamp line is read
+as unstamped.
 
 **Before writing a user-scope block, list its non-interactive consumers.**
 A block in a user-level instruction file reaches every run that file
@@ -311,7 +317,11 @@ chance to get it wrong. Pin the ROOT, and list the derived paths: a pin
 that names only the observation-log directory — the place split-brain was
 first noticed — leaves the staging root, the manifest and the principles
 file to be re-derived by every session, and parallel sessions resolve
-them plausibly and differently. Where the environment provides a managed persistence directory
+them plausibly and differently. Where Claude Code runs with more than one
+config home (`CLAUDE_CONFIG_DIR`), the default `~/.claude/…` resolves per
+profile: choose one absolute workspace path at install, pin it in every
+profile's activation text and hook, and install the activation in every
+profile that holds the skill. Where the environment provides a managed persistence directory
 under the project identity (a memory directory it loads every session),
 that directory and the identity root are both "stable"; anchor inside the
 managed directory when one exists, otherwise on the identity root — never
@@ -1405,7 +1415,7 @@ snippet through the device shell. Never a hand-derived id.
 | Persistent workspace | the shared folder | pinned absolute path (see activation block) | none — handoff-doc mode below |
 | Live skill files | `.claude/skills/{skill}/` on a read-only mount (writes fail with EROFS) | `~/.claude/skills/{skill}/`, ordinary writable files — no guard | n/a |
 | Present a staged file for install | the file-presentation tool (`present_files`) with its upload button | none — report the staged path and a change summary in chat | paste into the handoff doc |
-| Scheduled review | the app's scheduled tasks (cloud-default: run remotely; legacy local mode: run on the user's machine, only while it is on — see the execution-mode note above) | cron / a harness `SessionStart` hook / an account-level scheduler that can reach the workspace — headless invocations carry the workspace grant (`--add-dir`) in the task definition | calendar reminder + manual trigger |
+| Scheduled review | the app's scheduled tasks (cloud-default: run remotely; legacy local mode: run on the user's machine, only while it is on — see the execution-mode note above) | cron / an account-level scheduler that can reach the workspace — headless invocations carry the workspace grant (`--add-dir`) in the task definition; a `SessionStart` hook reports the review state, it does not run the review | calendar reminder + manual trigger |
 | Session-start hook | none | `SessionStart` hook (`hookSpecificOutput.additionalContext`) | none |
 | Local-vs-cloud tell | `allow_cowork_file_delete` present ⇒ local session | n/a | n/a |
 
@@ -1418,6 +1428,9 @@ here). Register it as any local scheduler: the workspace grant goes into
 the task definition, and the first "Run now" of the task itself is the
 grant check (the access-grant paragraph below). The tell is a
 scheduled-task tool on the tool surface; absent, the CLI column applies.
+Where scheduled sessions already run for other jobs, register a dedicated
+`weekly-skill-review` task all the same: none of them reviews unprompted
+("Sessions whose output channel is owned by a caller").
 
 Grow the table when a new environment appears; do not scatter its tool
 names through the procedure files.
@@ -1460,9 +1473,17 @@ review therefore includes whatever allowed-directory configuration the
 harness needs for the workspace root — for Claude Code headless,
 `--add-dir "[ABSOLUTE PATH]"` on the invocation, or the equivalent
 permissions rule — and the setup is not done until one firing has
-reached the workspace **from inside the task's own execution context**:
+reached the workspace **and left one write there** (the review record or
+`last-review-date.txt`) **from inside the task's own execution context**:
 an interactive test proves nothing about the sandbox the scheduler
-creates, and a task the scheduler lists is not a run that succeeded.
+creates, a task the scheduler lists is not a run that succeeded, and a
+firing whose report says a write was refused is a failed setup, not a
+review that ran. Claude Code headless (`claude -p`) can refuse writes
+under `~/.claude/` through the Edit and Write tools as a sensitive file,
+with nobody present to approve, while Bash writes pass (reported on one
+install; whether a settings allow-rule lifts it is untested): for a
+scheduled review, anchor the workspace outside `~/.claude/` or prove the
+write on the first firing.
 (The run-time skip note: `references/weekly-review.md`, offline-workspace
 policy.)
 
@@ -1570,6 +1591,10 @@ fully in force, because the write is the only report there is: anything
 that would have been surfaced becomes an observation file naming the
 condition that fired, so the next interactive session inherits it; name
 the caller in `session_context`, and log only what the caller cannot see.
+An overdue review is review state (`last-review-date.txt` already carries
+it), not a new finding per run: log it at most once per review interval,
+only when no open entry names it, as "review overdue since <date>, N
+unattended runs".
 
 **A run that cannot write, or cannot get an approval answered, skips the
 write steps and reports back instead.** Three shapes: a child run with
@@ -1608,7 +1633,9 @@ The skill is least valuable at the moment it is adopted: the log is empty,
 a review correctly reports nothing to do, and the largest pile of
 uncaptured insight — the project's own history — is never touched because
 no procedure says to touch it. Session Start step 7 offers a one-off
-mining pass over handover, architecture and decision docs, commit history
+mining pass — first over the harness's own per-project memory folders
+(Claude Code's `memory/`), whose `feedback` files are corrections already
+saved once — then over handover, architecture and decision docs, commit history
 since the last release, test and verification scripts (which encode
 hard-won discipline densely), and existing agent-instruction files, which
 are largely a record of corrections the user already had to make.
